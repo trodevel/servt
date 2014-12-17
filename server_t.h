@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Id: server_t.h 1264 2014-12-15 18:14:59Z serge $
+// $Id: server_t.h 1265 2014-12-16 19:16:37Z serge $
 
 #ifndef SERVT_SERVER_T_H
 #define SERVT_SERVER_T_H
@@ -27,7 +27,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <list>                         // std::list
 #include <atomic>                       // std::atomic
 #include "../utils/wrap_mutex.h"        // SCOPE_LOCK
-#include "../threcon/i_controllable.h"  // threcon::IControllable
 
 #include "namespace_lib.h"       // NAMESPACE_SERVT_START
 
@@ -36,15 +35,17 @@ NAMESPACE_SERVT_START
 template <class _OBJ, class _IMPL>
 class ServerT: virtual public threcon::IControllable
 {
+    typedef _IMPL Plug;
+
 public:
-    ServerT();
+    ServerT( Plug * impl );
     ~ServerT();
 
     bool consume( _OBJ obj );
 
-    bool start();
+    void start();
 
-    // interface threcon::IControllable
+    // quasi-interface threcon::IControllable
     bool shutdown();
 
 protected:
@@ -62,9 +63,9 @@ protected:
 
 
 template <class _OBJ, class _IMPL>
-ServerT<_OBJ,_IMPL>::ServerT():
+ServerT<_OBJ,_IMPL>::ServerT( Plug * impl ):
     is_done_( false ),
-    impl_( nullptr )
+    impl_( impl )
 {
 }
 
@@ -84,7 +85,7 @@ bool ServerT<_OBJ,_IMPL>::consume( _OBJ obj )
 }
 
 template <class _OBJ, class _IMPL>
-bool ServerT<_OBJ,_IMPL>::start()
+void ServerT<_OBJ,_IMPL>::start()
 {
     worker_ = boost::thread( [=]()
     {
@@ -123,6 +124,8 @@ bool ServerT<_OBJ,_IMPL>::shutdown()
 {
     is_done_    = true;
     worker_.join();
+
+    return true;
 }
 
 
