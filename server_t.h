@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Id: server_t.h 1265 2014-12-16 19:16:37Z serge $
+// $Id: server_t.h 1275 2014-12-19 18:09:33Z serge $
 
 #ifndef SERVT_SERVER_T_H
 #define SERVT_SERVER_T_H
@@ -33,7 +33,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 NAMESPACE_SERVT_START
 
 template <class _OBJ, class _IMPL>
-class ServerT: virtual public threcon::IControllable
+class ServerT
 {
     typedef _IMPL Plug;
 
