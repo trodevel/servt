@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Id: message_pool.h 1281 2014-12-24 14:45:05Z serge $
+// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
 
 #ifndef SERVT_MESSAGE_POOL_H
 #define SERVT_MESSAGE_POOL_H

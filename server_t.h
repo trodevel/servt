@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Id: server_t.h 1275 2014-12-19 18:09:33Z serge $
+// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
 
 #ifndef SERVT_SERVER_T_H
 #define SERVT_SERVER_T_H

@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Id: namespace_lib.h 1264 2014-12-15 18:14:59Z serge $
+// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
 
 #ifndef NAMESPACE_SERVT_H
 #define NAMESPACE_SERVT_H

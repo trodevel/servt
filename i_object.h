@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Id: i_object.h 1266 2014-12-16 19:17:06Z serge $
+// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
 
 #ifndef SERVT_I_OBJECT_H
 #define SERVT_I_OBJECT_H
