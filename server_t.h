@@ -19,14 +19,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
+// $Revision: 1713 $ $Date:: 2015-04-21 #$ $Author: serge $
 
 #ifndef SERVT_SERVER_T_H
 #define SERVT_SERVER_T_H
 
 #include <list>                         // std::list
 #include <atomic>                       // std::atomic
-#include "../utils/wrap_mutex.h"        // SCOPE_LOCK
+#include <thread>                       // std::thread
+#include <mutex>                        // std::mutex
+#include "../utils/mutex_helper.h"      // MUTEX_SCOPE_LOCK
 
 #include "namespace_lib.h"       // NAMESPACE_SERVT_START
 
@@ -52,8 +54,8 @@ protected:
     typedef std::list< _OBJ > ObjectQueue;
 
 protected:
-    boost::mutex        mutex_;
-    boost::thread       worker_;
+    std::mutex          mutex_;
+    std::thread         worker_;
     std::atomic<bool>   is_done_;
 
     ObjectQueue         input_queue_;
@@ -77,7 +79,7 @@ ServerT<_OBJ,_IMPL>::~ServerT()
 template <class _OBJ, class _IMPL>
 bool ServerT<_OBJ,_IMPL>::consume( _OBJ obj )
 {
-    SCOPE_LOCK( mutex_ );
+    MUTEX_SCOPE_LOCK( mutex_ );
 
     input_queue_.push_back( obj );
 
@@ -87,7 +89,7 @@ bool ServerT<_OBJ,_IMPL>::consume( _OBJ obj )
 template <class _OBJ, class _IMPL>
 void ServerT<_OBJ,_IMPL>::start()
 {
-    worker_ = boost::thread( [=]()
+    worker_ = std::thread( [=]()
     {
         while( true )
         {
@@ -97,7 +99,7 @@ void ServerT<_OBJ,_IMPL>::start()
             _OBJ obj = nullptr;
 
             {
-                SCOPE_LOCK( mutex_ );
+                MUTEX_SCOPE_LOCK( mutex_ );
 
                 if( input_queue_.empty() == false )
                 {
@@ -112,7 +114,7 @@ void ServerT<_OBJ,_IMPL>::start()
                 impl_->handle( obj );
             }
 
-            THREAD_SLEEP_MS( 1 );
+            THIS_THREAD_SLEEP_MS( 1 );
         }
 
         impl_->shutdown();
