@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 1764 $ $Date:: 2015-05-20 #$ $Author: serge $
+// $Revision: 1773 $ $Date:: 2015-05-21 #$ $Author: serge $
 
 #ifndef SERVT_SERVER_T_H
 #define SERVT_SERVER_T_H
@@ -116,8 +116,6 @@ void ServerT<_OBJ,_IMPL>::start()
 
             THIS_THREAD_SLEEP_MS( 1 );
         }
-
-        impl_->on_server_thread_exit();
     } );
 };
 
