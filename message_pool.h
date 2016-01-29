@@ -19,17 +19,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
+// $Revision: 3309 $ $Date:: 2016-01-28 #$ $Author: serge $
 
-#ifndef SERVT_MESSAGE_POOL_H
-#define SERVT_MESSAGE_POOL_H
+#ifndef WORKT_MESSAGE_POOL_H
+#define WORKT_MESSAGE_POOL_H
 
 #include <deque>    // deque
 #include <mutex>    // mutex
 
-#include "namespace_lib.h"       // NAMESPACE_SERVT_START
+#include "namespace_lib.h"       // NAMESPACE_WORKT_START
 
-NAMESPACE_SERVT_START
+NAMESPACE_WORKT_START
 
 template <class _T>
 class MessagePool
@@ -101,6 +101,6 @@ void put( const _T * o )
     put( const_cast<_T*>( o ) );
 }
 
-NAMESPACE_SERVT_END
+NAMESPACE_WORKT_END
 
-#endif // SERVT_MESSAGE_POOL_H
+#endif // WORKT_MESSAGE_POOL_H

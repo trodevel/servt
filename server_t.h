@@ -1,6 +1,6 @@
 /*
 
-Generic Server Template.
+Generic Worker Template.
 
 Copyright (C) 2014 Sergey Kolevatov
 
@@ -19,10 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 1773 $ $Date:: 2015-05-21 #$ $Author: serge $
+// $Revision: 3310 $ $Date:: 2016-01-28 #$ $Author: serge $
 
-#ifndef SERVT_SERVER_T_H
-#define SERVT_SERVER_T_H
+#ifndef WORKT_WORKER_T_H
+#define WORKT_WORKER_T_H
 
 #include <list>                         // std::list
 #include <atomic>                       // std::atomic
@@ -30,18 +30,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <mutex>                        // std::mutex
 #include "../utils/mutex_helper.h"      // MUTEX_SCOPE_LOCK
 
-#include "namespace_lib.h"       // NAMESPACE_SERVT_START
+#include "namespace_lib.h"       // NAMESPACE_WORKT_START
 
-NAMESPACE_SERVT_START
+NAMESPACE_WORKT_START
 
 template <class _OBJ, class _IMPL>
-class ServerT
+class WorkerT
 {
     typedef _IMPL Plug;
 
 public:
-    ServerT( Plug * impl );
-    ~ServerT();
+    WorkerT( Plug * impl );
+    ~WorkerT();
 
     bool consume( _OBJ obj );
 
@@ -65,19 +65,19 @@ protected:
 
 
 template <class _OBJ, class _IMPL>
-ServerT<_OBJ,_IMPL>::ServerT( Plug * impl ):
+WorkerT<_OBJ,_IMPL>::WorkerT( Plug * impl ):
     is_done_( false ),
     impl_( impl )
 {
 }
 
 template <class _OBJ, class _IMPL>
-ServerT<_OBJ,_IMPL>::~ServerT()
+WorkerT<_OBJ,_IMPL>::~WorkerT()
 {
 }
 
 template <class _OBJ, class _IMPL>
-bool ServerT<_OBJ,_IMPL>::consume( _OBJ obj )
+bool WorkerT<_OBJ,_IMPL>::consume( _OBJ obj )
 {
     MUTEX_SCOPE_LOCK( mutex_ );
 
@@ -87,7 +87,7 @@ bool ServerT<_OBJ,_IMPL>::consume( _OBJ obj )
 }
 
 template <class _OBJ, class _IMPL>
-void ServerT<_OBJ,_IMPL>::start()
+void WorkerT<_OBJ,_IMPL>::start()
 {
     worker_ = std::thread( [=]()
     {
@@ -120,7 +120,7 @@ void ServerT<_OBJ,_IMPL>::start()
 };
 
 template <class _OBJ, class _IMPL>
-bool ServerT<_OBJ,_IMPL>::shutdown()
+bool WorkerT<_OBJ,_IMPL>::shutdown()
 {
     is_done_    = true;
     worker_.join();
@@ -129,6 +129,6 @@ bool ServerT<_OBJ,_IMPL>::shutdown()
 }
 
 
-NAMESPACE_SERVT_END
+NAMESPACE_WORKT_END
 
-#endif  // SERVT_SERVER_T_H
+#endif  // WORKT_WORKER_T_H

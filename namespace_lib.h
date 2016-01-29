@@ -19,12 +19,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
+// $Revision: 3309 $ $Date:: 2016-01-28 #$ $Author: serge $
 
-#ifndef NAMESPACE_SERVT_H
-#define NAMESPACE_SERVT_H
+#ifndef NAMESPACE_WORKT_H
+#define NAMESPACE_WORKT_H
 
-#define NAMESPACE_SERVT_START  namespace servt {
-#define NAMESPACE_SERVT_END    }
+#define NAMESPACE_WORKT_START  namespace workt {
+#define NAMESPACE_WORKT_END    }
 
-#endif  // NAMESPACE_SERVT_H
+#endif  // NAMESPACE_WORKT_H

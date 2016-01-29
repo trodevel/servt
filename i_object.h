@@ -19,14 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 1404 $ $Date:: 2015-01-16 #$ $Author: serge $
+// $Revision: 3309 $ $Date:: 2016-01-28 #$ $Author: serge $
 
-#ifndef SERVT_I_OBJECT_H
-#define SERVT_I_OBJECT_H
+#ifndef WORKT_I_OBJECT_H
+#define WORKT_I_OBJECT_H
 
-#include "namespace_lib.h"    // NAMESPACE_SERVT_START
+#include "namespace_lib.h"    // NAMESPACE_WORKT_START
 
-NAMESPACE_SERVT_START
+NAMESPACE_WORKT_START
 
 class IObject
 {
@@ -34,6 +34,6 @@ public:
     virtual ~IObject() {}
 };
 
-NAMESPACE_SERVT_END
+NAMESPACE_WORKT_END
 
-#endif  // SERVT_I_OBJECT_H
+#endif  // WORKT_I_OBJECT_H
