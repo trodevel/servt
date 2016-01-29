@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 3310 $ $Date:: 2016-01-28 #$ $Author: serge $
+// $Revision: 3312 $ $Date:: 2016-01-29 #$ $Author: serge $
 
 #ifndef WORKT_WORKER_T_H
 #define WORKT_WORKER_T_H
