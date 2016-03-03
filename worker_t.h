@@ -19,15 +19,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 3312 $ $Date:: 2016-01-29 #$ $Author: serge $
+// $Revision: 3540 $ $Date:: 2016-03-02 #$ $Author: serge $
 
 #ifndef WORKT_WORKER_T_H
 #define WORKT_WORKER_T_H
 
-#include <list>                         // std::list
+#include <deque>                        // std::deque
 #include <atomic>                       // std::atomic
 #include <thread>                       // std::thread
 #include <mutex>                        // std::mutex
+#include <condition_variable>           // std::condition_variable
 #include "../utils/mutex_helper.h"      // MUTEX_SCOPE_LOCK
 
 #include "namespace_lib.h"       // NAMESPACE_WORKT_START
@@ -43,23 +44,35 @@ public:
     WorkerT( Plug * impl );
     ~WorkerT();
 
-    bool consume( _OBJ obj );
+protected:
+
+    void consume( _OBJ obj );
 
     void start();
 
     // quasi-interface threcon::IControllable
-    bool shutdown();
+    void shutdown();
 
-protected:
-    typedef std::list< _OBJ > ObjectQueue;
+private:
 
-protected:
-    std::mutex          mutex_;
-    std::thread         worker_;
-    std::atomic<bool>   is_done_;
+    void thread_func();
 
-    ObjectQueue         input_queue_;
-    _IMPL               * impl_;
+    void handle_messages();
+
+private:
+    typedef std::deque< _OBJ > ObjectQueue;
+
+private:
+    std::thread                     worker_;
+    std::atomic<bool>               is_done_;
+
+    mutable std::mutex              mutex_wait_;
+    mutable std::condition_variable cond_;
+    mutable std::atomic<bool>       should_wakeup_myself_;
+
+    mutable std::mutex              input_queue_mutex_;
+    ObjectQueue                     input_queue_;
+    _IMPL                           * impl_;
 };
 
 
@@ -67,6 +80,7 @@ protected:
 template <class _OBJ, class _IMPL>
 WorkerT<_OBJ,_IMPL>::WorkerT( Plug * impl ):
     is_done_( false ),
+    should_wakeup_myself_( false ),
     impl_( impl )
 {
 }
@@ -77,55 +91,76 @@ WorkerT<_OBJ,_IMPL>::~WorkerT()
 }
 
 template <class _OBJ, class _IMPL>
-bool WorkerT<_OBJ,_IMPL>::consume( _OBJ obj )
+void WorkerT<_OBJ,_IMPL>::consume( _OBJ obj )
 {
-    MUTEX_SCOPE_LOCK( mutex_ );
+    MUTEX_SCOPE_LOCK( input_queue_mutex_ );
 
     input_queue_.push_back( obj );
 
-    return true;
+    cond_.notify_one();
 }
 
 template <class _OBJ, class _IMPL>
 void WorkerT<_OBJ,_IMPL>::start()
 {
-    worker_ = std::thread( [=]()
-    {
-        while( true )
-        {
-            if( is_done_ )
-                break;
-
-            _OBJ obj = nullptr;
-
-            {
-                MUTEX_SCOPE_LOCK( mutex_ );
-
-                if( input_queue_.empty() == false )
-                {
-                    obj = input_queue_.front();
-
-                    input_queue_.pop_front();
-                }
-            }
-
-            if( obj != nullptr )
-            {
-                impl_->handle( obj );
-            }
-
-            THIS_THREAD_SLEEP_MS( 1 );
-        }
-    } );
+    worker_   = std::thread( std::bind( & WorkerT<_OBJ,_IMPL>::thread_func, this ) );
 };
 
 template <class _OBJ, class _IMPL>
-bool WorkerT<_OBJ,_IMPL>::shutdown()
+void WorkerT<_OBJ,_IMPL>::thread_func()
+{
+    while( is_done_ == false )
+    {
+        if( should_wakeup_myself_ )
+        {
+            should_wakeup_myself_ =  false;
+        }
+        else
+        {
+            std::unique_lock<std::mutex> _( mutex_wait_ );
+            cond_.wait( _ );
+        }
+
+        handle_messages();
+
+        {
+            MUTEX_SCOPE_LOCK( input_queue_mutex_ );
+            if( input_queue_.empty() == false )
+            {
+                should_wakeup_myself_   = true;
+            }
+        }
+    }
+};
+
+template <class _OBJ, class _IMPL>
+void WorkerT<_OBJ,_IMPL>::handle_messages()
+{
+    ObjectQueue temp;
+
+    {
+        MUTEX_SCOPE_LOCK( input_queue_mutex_ );
+
+        if( input_queue_.empty() == false )
+        {
+            temp    = input_queue_;
+            input_queue_.clear();
+        }
+    }
+
+    for( auto c : temp )
+        impl_->handle( c );
+}
+
+
+template <class _OBJ, class _IMPL>
+void WorkerT<_OBJ,_IMPL>::shutdown()
 {
     is_done_    = true;
-    worker_.join();
 
-    return true;
+    cond_.notify_one();
+
+    worker_.join();
 }
 
 
